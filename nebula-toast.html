@@ -1,0 +1,234 @@
+<!--
+@license
+Copyright (c) 2017 Ars Nebula LLC.
+This code may be used under the terms found in LICENSE.md of this repository.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`<nebula-toast>` is a custom element to display a toast notification. The notification can be auto-closed after a specified `duration`, or when the user taps or clicks the notification area. The notification can be displayed at the top or the bottom of the screen area.
+
+```html
+<nebula-toast
+  id="toast"
+  position='top'
+  background-color="darkred"
+  color="white"
+  duration=5000>
+</nebula-toast>
+```
+
+You can specify style values using the `color` and `backgroundColor` properties, or use the following CSS custom properties and mixins:
+
+Custom property | Description
+----------------|-------------
+`--nebula-toast-color` | The text foreground color
+`--nebula-toast-background-color` | The background color
+`--nebula-toast` | Mixin applied to the base element
+
+You can use the `show` method to display a toast and wait for it to close. The method returns a promise that is resolved once the element closing animation is complete.
+
+```js
+this.$.toast.show({
+  text: 'Hello world'
+}).then(function() {
+  console.log('The toast has closed')
+})
+```
+
+@demo demo/index.html
+-->
+
+<dom-module id="nebula-toast">
+  <template>
+    <style>
+      :host {
+        position: fixed;
+        left: 0;
+        right: 0;
+        width: 85%;
+        max-width: 600px;
+        margin: 16px auto;
+        padding: 16px;
+        border: 0;
+        border-radius: 2px;
+        overflow: hidden;
+        cursor: pointer;
+        user-select: none;
+        background-color: var(--nebula-toast-background-color, dimgrey);
+        color: var(--nebula-toast-color, white);
+        visibility: hidden;
+        opacity: 0;
+        transition: transform 0.5s ease, opacity 0.5s linear, visibility 0s linear 0.5s;
+        @apply(--nebula-toast);
+      }
+      :host([position=top]) {
+        top: 0;
+        transform: translateY(-100%); 
+      }
+      :host([position=bottom]) {
+        bottom: 0;
+        transform: translateY(+100%);
+      }
+      :host([opened]) {
+        transform: translateY(0%);
+        opacity: 1;
+        visibility: visible;
+        transition: transform 0.5s ease, opacity 0.4s linear;
+      }
+    </style>
+    [[text]]
+  </template>
+  <script>
+    Polymer({
+      is: 'nebula-toast',
+      properties: {
+        /**
+         * True if the toast is open, otherwise false.
+         */
+        opened: {
+          type: Boolean,
+          reflectToAttribute: true,
+          notify: true,
+          value: false
+        },
+        /**
+         * Position of the toast.
+         * Supported values are <b>top</b> or <b>bottom</b>.
+         */
+        position: {
+          type: String,
+          reflectToAttribute: true,
+          value: 'bottom'
+        },
+        /**
+         * The text that is displayed.
+         * The element will resize to fit the content automatically.
+         */
+        text: {
+          type: String
+        },
+        /**
+         * The color of the element.
+         * Setting this property will override the <b>--nebula-toast--color</b> custom CSS property.
+         */
+        color: {
+          type: String
+        },
+        /**
+         * The background color of the element.
+         * Setting this property will override the <b>--nebula-toast-background-color</b> custom CSS property.
+         */
+        backgroundColor: {
+          type: String
+        },
+        /**
+         * The duration (ms) before the element is automatically closed.
+         * Set the duration to zero to close the toast manually.
+         */
+        duration: {
+          type: Number,
+          value: 5000
+        }
+      },
+      observers: [
+        '_onOpenedChanged(opened, duration)',
+        '_onColorChanged(color)',
+        '_onBackgroundColorChanged(backgroundColor)'
+      ],
+      listeners: {
+        'tap': '_onTap',
+        'transitionend': '_onTransitionEnd',
+      },
+      /**
+       * Property observer triggered when the value of <b>opened</b> is changed.
+       */
+      _onOpenedChanged(opened, duration) {
+        if (this.timeout) {
+          clearTimeout(this.timeout)
+          this.timeout = null
+        }
+        if (opened && duration > 0) {
+          this.timeout = setTimeout(function() {
+            this.set('opened', false)
+          }.bind(this), duration)
+        }        
+      },
+      /**
+       * Property observer triggered when the value of <b>color</b> is changed.
+       */
+      _onColorChanged(color) {
+        if (this.customStyle) {
+          this.customStyle['--nebula-toast-color'] = color
+          this.updateStyles()
+        } else {
+          this.updateStyles({
+            '--nebula-toast-color': color
+          })
+        }
+      },
+      /**
+       * Property observer triggered when the value of <b>backgroundColor</b> is changed.
+       */
+      _onBackgroundColorChanged(backgroundColor) {
+        if (this.customStyle) {
+          this.customStyle['--nebula-toast-background-color'] = backgroundColor
+          this.updateStyles()
+        } else {
+          this.updateStyles({
+            '--nebula-toast-background-color': backgroundColor
+          })
+        }
+      },
+      /**
+       * Event handler triggered when the element is clicked or pressed.
+       */
+      _onTap(e) {
+        e.stopPropagation()
+        this.set('opened', false)
+      },
+      /**
+       * Event handler triggered when opening and closing animation is complete.
+       */
+      /**
+       * Event triggered when element opening animation is complete.
+       * @event opened
+       */
+      /**
+       * Event triggered when element closing animation is complete.
+       * @event closed
+       */      
+      _onTransitionEnd(e) {
+        if (e.propertyName === 'opacity') {
+          if (this.opened) {
+            this.fire('opened', null, {bubbles: false})
+          }
+          else {
+            this.fire('closed', null, {bubbles: false})
+          }
+        }
+      },
+      /**
+       * Displays the element.
+       * Any provided options will be merged into the element properties.
+       * A promise is returned that will resolve when the element has been closed.
+       */
+      show(options) {
+        return new Promise(function(resolve) {
+          if (options) Object.assign(this, options)
+          
+          // listen for our own closed event and resolve promise
+          var handler = function() {
+            this.removeEventListener('closed', handler)
+            resolve() 
+          }
+          this.addEventListener('closed', handler.bind(this))
+
+          // open the toast
+          this.set('opened', true)
+        }.bind(this))
+      }
+    })
+  </script>
+</dom-module>

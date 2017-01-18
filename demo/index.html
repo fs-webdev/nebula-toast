@@ -1,0 +1,39 @@
+<!doctype html>
+
+<html>
+  <head>
+    <title>nebula-i18n demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../nebula-toast.html">
+    <style is="custom-style" include="demo-pages-shared-styles">
+    </style>
+  </head>
+  <body>
+
+    <div class="vertical-section-container centered">
+      <h3>Toast</h3>
+      <demo-snippet>
+        <template is="dom-bind" id="demo">
+          <nebula-toast
+            id="toast"
+            background-color="darkred"
+            color="white"
+            duration=5000
+            text="{{message}}">
+          </nebula-toast>
+          <input type="text" value="{{message::input}}"/>
+          <button onclick="toast.show()">Open Toast</button>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <script>
+      demo.message = "Would you like toast?"
+    </script>
+
+  </body>
+</html>
