@@ -2,7 +2,7 @@
 
 <html>
   <head>
-    <title>nebula-i18n demo</title>
+    <title>nebula-toast demo</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
@@ -28,12 +28,34 @@
           <input type="text" value="{{message::input}}"/>
           <button onclick="toast.show()">Open Toast</button>
         </template>
+        <script>
+          demo.message = "Would you like toast?"
+        </script>
       </demo-snippet>
     </div>
 
-    <script>
-      demo.message = "Would you like toast?"
-    </script>
+    <div class="vertical-section-container centered">
+      <h3>Dynamic Toast</h3>
+      <demo-snippet>
+        <template is="dom-bind" id="demo2">
+          <input type="text" value="{{message::input}}"/>
+          <button onclick="demo2.show()">Open Toast</button>
+        </template>
+        <script>
+          demo2.message = "Would you like toast?"
+          demo2.show = function() {
+            var toast = document.createElement('nebula-toast')
+            toast.show({
+              text: demo2.message,
+              backgroundColor: 'black',
+              color: 'yellow'
+            }).then(function() {
+              console.log('Toast is closed')
+            })
+          }
+        </script>
+      </demo-snippet>
+    </div>
 
   </body>
 </html>

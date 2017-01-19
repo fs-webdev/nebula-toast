@@ -25,6 +25,8 @@ Custom property | Description
 ----------------|-------------
 `--nebula-toast-color` | The text foreground color
 `--nebula-toast-background-color` | The background color
+`--nebula-toast-transition-duration` | The animation speed showing and hiding the overlay
+`--nebula-toast-z-index` | The stacking order of the overlay
 `--nebula-toast` | Mixin applied to the base element
 
 You can use the `show` method to display a toast and wait for it to close. The method returns a promise that is resolved once the element closing animation is complete.
@@ -44,6 +46,10 @@ this.$.toast.show({
   <template>
     <style>
       :host {
+        --nebula-toast-background-color: dimgrey;
+        --nebula-toast-color: white;
+        --nebula-toast-transition-duration: 0.4s;
+        --nebula-toast-z-index: 9999;
         position: fixed;
         left: 0;
         right: 0;
@@ -52,15 +58,18 @@ this.$.toast.show({
         margin: 16px auto;
         padding: 16px;
         border: 0;
+        font-family: sans-serif;
+        font-size: 1rem;
         border-radius: 2px;
         overflow: hidden;
         cursor: pointer;
         user-select: none;
-        background-color: var(--nebula-toast-background-color, dimgrey);
-        color: var(--nebula-toast-color, white);
+        background-color: var(--nebula-toast-background-color);
+        color: var(--nebula-toast-color);
+        z-index: var(--nebula-toast-z-index);
         visibility: hidden;
         opacity: 0;
-        transition: transform 0.5s ease, opacity 0.5s linear, visibility 0s linear 0.5s;
+        transition: transform var(--nebula-toast-transition-duration) ease, opacity var(--nebula-toast-transition-duration) linear, visibility 0s linear var(--nebula-toast-transition-duration);
         @apply(--nebula-toast);
       }
       :host([position=top]) {
@@ -75,7 +84,7 @@ this.$.toast.show({
         transform: translateY(0%);
         opacity: 1;
         visibility: visible;
-        transition: transform 0.5s ease, opacity 0.4s linear;
+        transition: transform var(--nebula-toast-transition-duration) ease, opacity var(--nebula-toast-transition-duration) linear;
       }
     </style>
     [[text]]
@@ -124,6 +133,13 @@ this.$.toast.show({
           type: String
         },
         /**
+         * The transition duration of the element.
+         * Setting this property will override the <b>--nebula-toast-transition-duration</b> custom CSS property.
+         */
+        transitionDuration: {
+          type: String
+        },
+        /**
          * The duration (ms) before the element is automatically closed.
          * Set the duration to zero to close the toast manually.
          */
@@ -134,8 +150,9 @@ this.$.toast.show({
       },
       observers: [
         '_onOpenedChanged(opened, duration)',
-        '_onColorChanged(color)',
-        '_onBackgroundColorChanged(backgroundColor)'
+        '_onStyleChanged(color, "--nebula-toast-color")',
+        '_onStyleChanged(backgroundColor, "--nebula-toast-background-color")',
+        '_onStyleChanged(transitionDuration, "--nebula-toast-transition-duration")'
       ],
       listeners: {
         'tap': '_onTap',
@@ -156,30 +173,12 @@ this.$.toast.show({
         }        
       },
       /**
-       * Property observer triggered when the value of <b>color</b> is changed.
+       * Property observer triggered when the value of any style-related property is changed.
        */
-      _onColorChanged(color) {
-        if (this.customStyle) {
-          this.customStyle['--nebula-toast-color'] = color
-          this.updateStyles()
-        } else {
-          this.updateStyles({
-            '--nebula-toast-color': color
-          })
-        }
-      },
-      /**
-       * Property observer triggered when the value of <b>backgroundColor</b> is changed.
-       */
-      _onBackgroundColorChanged(backgroundColor) {
-        if (this.customStyle) {
-          this.customStyle['--nebula-toast-background-color'] = backgroundColor
-          this.updateStyles()
-        } else {
-          this.updateStyles({
-            '--nebula-toast-background-color': backgroundColor
-          })
-        }
+      _onStyleChanged(propName, varName) {
+        this.updateStyles({
+          [varName]: propName
+        })
       },
       /**
        * Event handler triggered when the element is clicked or pressed.
@@ -217,16 +216,31 @@ this.$.toast.show({
       show(options) {
         return new Promise(function(resolve) {
           if (options) Object.assign(this, options)
+
+          // add element to document body if not parent
+          if (!this.parentNode) {
+            this._appended = true
+            document.body.appendChild(this)
+          }
           
           // listen for our own closed event and resolve promise
           var handler = function() {
             this.removeEventListener('closed', handler)
+
+            if (this._appended) {
+              this._appended = false
+              document.body.removeChild(this)
+            }
+
             resolve() 
           }
           this.addEventListener('closed', handler.bind(this))
 
-          // open the toast
-          this.set('opened', true)
+          // open the toast in timeout closure to accomodate for animation
+          // when appending new element
+          setTimeout(function() {
+            this.set('opened', true)
+          }.bind(this))
         }.bind(this))
       }
     })

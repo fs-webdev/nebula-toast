@@ -25,21 +25,23 @@ Add and configure the element declaratively:
   position='top'
   background-color="darkred"
   color="white"
+  transition-duration="0.5s"
   duration=5000>
 </nebula-toast>
 ```
 
-or add and configure the element programatically using the `show` method:
+or add and configure the element programatically using the `show` method. The element is auto-appeneded and removed from the `document.body` if not done manually.
 
 ```js
 var toast = document.createElement('nebula-toast')
-document.body.appendChild(toast)
+
 toast.show({
   text: 'Hello world',
-  backgroundColor: 'darkgrey',
-  duration: 3000
+  backgroundColor: 'black',
+  color: 'yellow',
+  transition-duration: '0.5s',
+  duration: 5000
 }).then(function() {
-  document.body.removeChild(toast)
   console.log('The toast has closed')
 })
 ```

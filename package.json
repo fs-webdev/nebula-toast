@@ -1,6 +1,6 @@
 {
   "name": "nebula-toast",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Web component to display a toast notification.",
   "license": "ISC",
   "author": "Chris Beckett <chrisb@arsnebula.com>",
@@ -13,6 +13,7 @@
   "keywords": [
     "polymer",
     "web-components",
+    "overlay",
     "toast",
     "notification"
   ],
