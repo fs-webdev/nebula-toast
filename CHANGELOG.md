@@ -1,5 +1,9 @@
 # Change Log
 
+## [v1.0.3](https://github.com/arsnebula/nebula-toast/releases/tag/v1.0.2) (2017-01-19)
+
+- Fixed missing import
+
 ## [v1.0.2](https://github.com/arsnebula/nebula-toast/releases/tag/v1.0.2) (2017-01-19)
 
 - Added `a11y` accessability support for keyboard and screen readers
