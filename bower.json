@@ -15,12 +15,15 @@
   "keywords": [
     "polymer",
     "web-components",
+    "overlay",
     "toast",
     "notification"
   ],
   "main": "nebula-toast.html",
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.7.1"
+    "polymer": "Polymer/polymer#^1.7.1",
+    "iron-a11y-keys-behavior": "PolymerElements/iron-a11y-keys-behavior#^1.1.9",
+    "iron-a11y-announcer": "PolymerElements/iron-a11y-announcer#^1.0.5"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",

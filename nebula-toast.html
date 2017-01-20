@@ -5,6 +5,7 @@ This code may be used under the terms found in LICENSE.md of this repository.
 -->
 
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-a11y-keys-behavior/iron-a11y-keys-behavior.html">
 
 <!--
 `<nebula-toast>` is a custom element to display a toast notification. The notification can be auto-closed after a specified `duration`, or when the user taps or clicks the notification area. The notification can be displayed at the top or the bottom of the screen area.
@@ -92,6 +93,9 @@ this.$.toast.show({
   <script>
     Polymer({
       is: 'nebula-toast',
+      behaviors: [
+        Polymer.IronA11yKeysBehavior
+      ],
       properties: {
         /**
          * True if the toast is open, otherwise false.
@@ -146,7 +150,20 @@ this.$.toast.show({
         duration: {
           type: Number,
           value: 5000
+        },
+        /**
+         * The target element used to capture keyboard events.
+         * Set it to <b>null</b> to disable event listeners.
+         */
+        keyEventTarget: {
+          type: Object,
+          value: function() {
+            return document.body
+          }
         }
+      },
+      keyBindings: {
+        'esc': '_onCancel'
       },
       observers: [
         '_onOpenedChanged(opened, duration)',
@@ -155,8 +172,11 @@ this.$.toast.show({
         '_onStyleChanged(transitionDuration, "--nebula-toast-transition-duration")'
       ],
       listeners: {
-        'tap': '_onTap',
+        'tap': '_onCancel',
         'transitionend': '_onTransitionEnd',
+      },
+      ready() {
+        Polymer.IronA11yAnnouncer.requestAvailability();
       },
       /**
        * Property observer triggered when the value of <b>opened</b> is changed.
@@ -181,13 +201,6 @@ this.$.toast.show({
         })
       },
       /**
-       * Event handler triggered when the element is clicked or pressed.
-       */
-      _onTap(e) {
-        e.stopPropagation()
-        this.set('opened', false)
-      },
-      /**
        * Event handler triggered when opening and closing animation is complete.
        */
       /**
@@ -202,10 +215,20 @@ this.$.toast.show({
         if (e.propertyName === 'opacity') {
           if (this.opened) {
             this.fire('opened', null, {bubbles: false})
+            this.fire('iron-announce', {text: this.textContent}, { bubbles: true });
           }
           else {
             this.fire('closed', null, {bubbles: false})
           }
+        }
+      },
+      /**
+       * Event handler triggered when the user cancels the element by tap, click or ESC keypress.
+       */
+      _onCancel(e) {
+        if (this.opened) {
+          e.stopPropagation()
+          this.set('opened', false)
         }
       },
       /**

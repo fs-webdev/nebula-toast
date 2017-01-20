@@ -3,6 +3,12 @@
 
 A web component to display a toast notification.
 
+* Responsive design adapts to screen size
+* Can be positioned at the top or the bottom of the screen
+* Supports `a11y` for accessability
+* Easily styled declaratively or with CSS custom properties
+* Can auto-close after a specified duration
+
 ## Installation
 
 ```
@@ -30,7 +36,7 @@ Add and configure the element declaratively:
 </nebula-toast>
 ```
 
-or add and configure the element programatically using the `show` method. The element is auto-appeneded and removed from the `document.body` if not done manually.
+Add and configure the element programatically using the `show` method. The element is appended and removed from the `document.body` automatically.
 
 ```js
 var toast = document.createElement('nebula-toast')
