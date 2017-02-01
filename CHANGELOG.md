@@ -1,6 +1,17 @@
 # Change Log
 
-## [v1.0.3](https://github.com/arsnebula/nebula-toast/releases/tag/v1.0.2) (2017-01-19)
+## [v1.0.4](https://github.com/arsnebula/nebula-toast/releases/tag/v1.0.4) (2017-01-31)
+
+- Removed dependency on iron-a11y-keys-behavior.
+- Added support for style attributes behavior.
+- Changed test configuration to include IE/Edge and ES5 compatability.
+- Fixed method declaration issue with IE/Edge.
+- Added test index for test suites.
+- Added tests for polyfill and native shadow dom.
+- Added test configuration for Sauce Labs.
+- Added Sauce Labs badges to README.
+
+## [v1.0.3](https://github.com/arsnebula/nebula-toast/releases/tag/v1.0.3) (2017-01-19)
 
 - Fixed missing import
 

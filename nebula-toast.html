@@ -5,11 +5,15 @@ This code may be used under the terms found in LICENSE.md of this repository.
 -->
 
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../iron-a11y-keys-behavior/iron-a11y-keys-behavior.html">
 <link rel="import" href="../iron-a11y-announcer/iron-a11y-announcer.html">
+<link rel="import" href="../nebula-style-attributes-behavior/nebula-style-attributes-behavior.html">
 
 <!--
 `<nebula-toast>` is a custom element to display a toast notification. The notification can be auto-closed after a specified `duration`, or when the user taps or clicks the notification area. The notification can be displayed at the top or the bottom of the screen area.
+
+> Warning: This element utilizes features of [ECMAScript 2015](http://www.ecma-international.org/ecma-262/6.0/) which may not be supported by all browsers. To ensure support by all browsers, consider using the [Core-js Polyfill](https://github.com/zloirock/core-js).
+
+## Usage
 
 ```html
 <nebula-toast
@@ -21,25 +25,36 @@ This code may be used under the terms found in LICENSE.md of this repository.
 </nebula-toast>
 ```
 
-You can specify style values using the `color` and `backgroundColor` properties, or use the following CSS custom properties and mixins:
-
-Custom property | Description
-----------------|-------------
-`--nebula-toast-color` | The text foreground color
-`--nebula-toast-background-color` | The background color
-`--nebula-toast-transition-duration` | The animation speed showing and hiding the overlay
-`--nebula-toast-z-index` | The stacking order of the overlay
-`--nebula-toast` | Mixin applied to the base element
-
-You can use the `show` method to display a toast and wait for it to close. The method returns a promise that is resolved once the element closing animation is complete.
+Add and configure the element programatically using the `show` method. The element is appended and removed from the `document.body` automatically. The method returns a promise that is resolved once the element closing animation is complete.
 
 ```js
-this.$.toast.show({
-  text: 'Hello world'
-}).then(function() {
+var toast = Polymer.Base.create('nebula-toast', {
+  text: 'Hello world',
+  transition-duration: '0.5s',
+  duration: 5000
+})
+
+toast.show().then(function() {
   console.log('The toast has closed')
 })
 ```
+
+## Style
+
+You can style the element using CSS custom properties and mixins:
+
+Custom property | Description | Default
+:--- | :--- | :---
+`--nebula-toast-color` | The text color. | white
+`--nebula-toast-background-color` | The background color. | dimgrey
+`--nebula-toast-transition-duration` | The animation speed showing and hiding the overlay. | 0.4s
+`--nebula-toast-z-index` | The stacking order of the overlay. | 9999
+`--nebula-toast` | Mixin applied to the base element.
+
+The following styles can also be set as attributes on the element:
+
+- `color`
+- 'background-color'
 
 @demo demo/index.html
 -->
@@ -93,114 +108,6 @@ this.$.toast.show({
   </template>
   <script>
     Polymer({
-      is: 'nebula-toast',
-      behaviors: [
-        Polymer.IronA11yKeysBehavior
-      ],
-      properties: {
-        /**
-         * True if the toast is open, otherwise false.
-         */
-        opened: {
-          type: Boolean,
-          reflectToAttribute: true,
-          notify: true,
-          value: false
-        },
-        /**
-         * Position of the toast.
-         * Supported values are <b>top</b> or <b>bottom</b>.
-         */
-        position: {
-          type: String,
-          reflectToAttribute: true,
-          value: 'bottom'
-        },
-        /**
-         * The text that is displayed.
-         * The element will resize to fit the content automatically.
-         */
-        text: {
-          type: String
-        },
-        /**
-         * The color of the element.
-         * Setting this property will override the <b>--nebula-toast--color</b> custom CSS property.
-         */
-        color: {
-          type: String
-        },
-        /**
-         * The background color of the element.
-         * Setting this property will override the <b>--nebula-toast-background-color</b> custom CSS property.
-         */
-        backgroundColor: {
-          type: String
-        },
-        /**
-         * The transition duration of the element.
-         * Setting this property will override the <b>--nebula-toast-transition-duration</b> custom CSS property.
-         */
-        transitionDuration: {
-          type: String
-        },
-        /**
-         * The duration (ms) before the element is automatically closed.
-         * Set the duration to zero to close the toast manually.
-         */
-        duration: {
-          type: Number,
-          value: 5000
-        },
-        /**
-         * The target element used to capture keyboard events.
-         * Set it to <b>null</b> to disable event listeners.
-         */
-        keyEventTarget: {
-          type: Object,
-          value: function() {
-            return document.body
-          }
-        }
-      },
-      keyBindings: {
-        'esc': '_onCancel'
-      },
-      observers: [
-        '_onOpenedChanged(opened, duration)',
-        '_onStyleChanged(color, "--nebula-toast-color")',
-        '_onStyleChanged(backgroundColor, "--nebula-toast-background-color")',
-        '_onStyleChanged(transitionDuration, "--nebula-toast-transition-duration")'
-      ],
-      listeners: {
-        'tap': '_onCancel',
-        'transitionend': '_onTransitionEnd',
-      },
-      ready() {
-        Polymer.IronA11yAnnouncer.requestAvailability();
-      },
-      /**
-       * Property observer triggered when the value of <b>opened</b> is changed.
-       */
-      _onOpenedChanged(opened, duration) {
-        if (this.timeout) {
-          clearTimeout(this.timeout)
-          this.timeout = null
-        }
-        if (opened && duration > 0) {
-          this.timeout = setTimeout(function() {
-            this.set('opened', false)
-          }.bind(this), duration)
-        }        
-      },
-      /**
-       * Property observer triggered when the value of any style-related property is changed.
-       */
-      _onStyleChanged(propName, varName) {
-        this.updateStyles({
-          [varName]: propName
-        })
-      },
       /**
        * Event handler triggered when opening and closing animation is complete.
        */
@@ -212,11 +119,108 @@ this.$.toast.show({
        * Event triggered when element closing animation is complete.
        * @event closed
        */      
-      _onTransitionEnd(e) {
+      is: 'nebula-toast',
+      behaviors: [
+        Nebula.StyleAttributesBehavior
+      ],
+      styleAttributes: {
+        'color': '--nebula-toast-color',
+        'background-color': '--nebula-toast-background-color'
+      },
+      properties: {
+        /**
+        * True if the toast is open, otherwise false.
+        */
+        opened: {
+          type: Boolean,
+          reflectToAttribute: true,
+          notify: true,
+          value: false
+        },
+        /**
+        * Position of the toast.
+        * Supported values are <b>top</b> or <b>bottom</b>.
+        */
+        position: {
+          type: String,
+          reflectToAttribute: true,
+          value: 'bottom'
+        },
+        /**
+        * The text that is displayed.
+        * The element will resize to fit the content automatically.
+        */
+        text: {
+          type: String
+        },
+        /**
+        * The duration (ms) before the element is automatically closed.
+        * Set the duration to zero to close the toast manually.
+        */
+        duration: {
+          type: Number,
+          value: 5000
+        }
+      },
+      observers: [
+        '_onOpenedChanged(opened, duration)'
+      ],
+      listeners: {
+        'tap': '_onTap',
+        'transitionend': '_onTransitionEnd'
+      },
+      /**
+      * Lifecycle handler when element is ready.
+      */
+      ready: function() {
+        Polymer.IronA11yAnnouncer.requestAvailability();
+      },
+      /**
+      * Lifecycle handler triggered when a key is pressed down.
+      * The handler is added and removed automatically when a toast is opened and closed.
+      */ 
+      _onKey: function(e) {
+        var key = e.keyCode || e.which
+        if (key === 27) {
+          this.set('opened', false)
+          return false
+        }
+      },
+      /**
+       * Event handler triggered when the user taps the element.
+       * The element is automatically closed.
+       */
+      _onTap: function(e) {
+        this.set('opened', false)
+        return false
+      },
+      /**
+       * Property observer triggered when the value of `opened` is changed.
+       */
+      _onOpenedChanged: function(opened, duration) {
+        if (this.timeout) {
+          clearTimeout(this.timeout)
+          this.timeout = null
+        }
+        if (opened && duration > 0) {
+          this.timeout = setTimeout(function() {
+            this.set('opened', false)
+          }.bind(this), duration)
+        }
+        if (opened) {
+          document.addEventListener('keydown', this._onKey.bind(this))
+        } else {
+          document.removeEventListener('keydown', this._onKey)
+        }
+      },
+      /**
+       * Event handler triggered when the element opening or closing animation is complete.
+       */
+      _onTransitionEnd: function(e) {
         if (e.propertyName === 'opacity') {
           if (this.opened) {
             this.fire('opened', null, {bubbles: false})
-            this.fire('iron-announce', {text: this.textContent}, { bubbles: true });
+            this.fire('iron-announce', {text: this.text}, { bubbles: true });
           }
           else {
             this.fire('closed', null, {bubbles: false})
@@ -224,23 +228,12 @@ this.$.toast.show({
         }
       },
       /**
-       * Event handler triggered when the user cancels the element by tap, click or ESC keypress.
-       */
-      _onCancel(e) {
-        if (this.opened) {
-          e.stopPropagation()
-          this.set('opened', false)
-        }
-      },
-      /**
        * Displays the element.
        * Any provided options will be merged into the element properties.
        * A promise is returned that will resolve when the element has been closed.
        */
-      show(options) {
+      show: function(options) {
         return new Promise(function(resolve) {
-          if (options) Object.assign(this, options)
-
           // add element to document body if not parent
           if (!this.parentNode) {
             this._appended = true

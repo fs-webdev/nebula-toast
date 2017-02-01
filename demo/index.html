@@ -2,10 +2,11 @@
 
 <html>
   <head>
-    <title>nebula-toast demo</title>
+    <title>nebula-toast</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../core.js/client/shim.js"></script>
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
     <link rel="import" href="../nebula-toast.html">
@@ -44,12 +45,12 @@
         <script>
           demo2.message = "Would you like toast?"
           demo2.show = function() {
-            var toast = document.createElement('nebula-toast')
-            toast.show({
-              text: demo2.message,
-              backgroundColor: 'black',
-              color: 'yellow'
-            }).then(function() {
+            var toast = Polymer.Base.create('nebula-toast', {
+              text: demo2.message
+            })
+            toast.setAttribute('color', 'yellow')
+            toast.setAttribute('background-color', 'black')
+            toast.show().then(function() {
               console.log('Toast is closed')
             })
           }

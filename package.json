@@ -1,7 +1,7 @@
 {
   "name": "nebula-toast",
-  "version": "1.0.3",
-  "description": "Web component to display a toast notification.",
+  "version": "1.0.4",
+  "description": "A web component to display a toast notification.",
   "license": "ISC",
   "author": "Chris Beckett <chrisb@arsnebula.com>",
   "homepage": "https://github.com/arsnebula/nebula-toast",
@@ -18,7 +18,8 @@
     "notification"
   ],
   "scripts": {
-    "test": "wct",
+    "test": "wct --plugin local",
+    "test:sauce": "wct --plugin sauce --sauce-username=arsnebula",
     "start": "browser-sync start -c bsconfig.js"
   },
   "standard": {
