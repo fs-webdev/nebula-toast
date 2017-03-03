@@ -7,15 +7,22 @@
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../../core.js/client/shim.js"></script>
+    <link rel="import" href="../../promise-polyfill/promise-polyfill-lite.html">
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
     <link rel="import" href="../nebula-toast.html">
-    <style is="custom-style" include="demo-pages-shared-styles">
-    </style>
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+        html {
+          --nebula-ui-primary-color: darkred;
+          --nebula-ui-border-radius: 8px;
+        }        
+      </style>
+    </custom-style>
   </head>
   <body>
 
-    <div class="vertical-section-container centered">
+    <div class="vertical-section-container">
       <h3>Toast</h3>
       <demo-snippet>
         <template is="dom-bind" id="demo">
@@ -35,7 +42,7 @@
       </demo-snippet>
     </div>
 
-    <div class="vertical-section-container centered">
+    <div class="vertical-section-container">
       <h3>Dynamic Toast</h3>
       <demo-snippet>
         <template is="dom-bind" id="demo2">

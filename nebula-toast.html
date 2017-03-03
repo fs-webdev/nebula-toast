@@ -5,13 +5,9 @@ This code may be used under the terms found in LICENSE.md of this repository.
 -->
 
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../iron-a11y-announcer/iron-a11y-announcer.html">
-<link rel="import" href="../nebula-style-attributes-behavior/nebula-style-attributes-behavior.html">
 
 <!--
 `<nebula-toast>` is a custom element to display a toast notification. The notification can be auto-closed after a specified `duration`, or when the user taps or clicks the notification area. The notification can be displayed at the top or the bottom of the screen area.
-
-> Warning: This element utilizes features of [ECMAScript 2015](http://www.ecma-international.org/ecma-262/6.0/) which may not be supported by all browsers. To ensure support by all browsers, consider using the [Core-js Polyfill](https://github.com/zloirock/core-js).
 
 ## Usage
 
@@ -19,8 +15,6 @@ This code may be used under the terms found in LICENSE.md of this repository.
 <nebula-toast
   id="toast"
   position='top'
-  background-color="darkred"
-  color="white"
   duration=5000>
 </nebula-toast>
 ```
@@ -30,7 +24,6 @@ Add and configure the element programatically using the `show` method. The eleme
 ```js
 var toast = Polymer.Base.create('nebula-toast', {
   text: 'Hello world',
-  transition-duration: '0.5s',
   duration: 5000
 })
 
@@ -41,20 +34,26 @@ toast.show().then(function() {
 
 ## Style
 
-You can style the element using CSS custom properties and mixins:
+Theme variables are the easiest way to style the element. Theme variables may affect multiple styles and element states.
+
+Custom property | Description
+:--- | :---
+`--nebula-toast-color` | The theme color of the element.
+`--nebula-toast-background-color` | The theme background color of the element.
+
+For more granular control, the following mixins can be used to customize the element further.
+
+Custom property | Description
+:--- | :---
+`--nebula-toast` | Mixin applied to base element.
+`--nebula-toast-opened` | Mixin applied to element when opened.
+
+The element also inherits default values from the following global theme styles. If a global theme variable has not been set, it will use the local default.
 
 Custom property | Description | Default
 :--- | :--- | :---
-`--nebula-toast-color` | The text color. | white
-`--nebula-toast-background-color` | The background color. | dimgrey
-`--nebula-toast-transition-duration` | The animation speed showing and hiding the overlay. | 0.4s
-`--nebula-toast-z-index` | The stacking order of the overlay. | 9999
-`--nebula-toast` | Mixin applied to the base element.
-
-The following styles can also be set as attributes on the element:
-
-- `color`
-- 'background-color'
+`--nebula-ui-primary-color | The theme color of the element. | teal
+`--nebula-ui-border-radius` | The border-radius of the element. | 2px
 
 @demo demo/index.html
 -->
@@ -63,10 +62,6 @@ The following styles can also be set as attributes on the element:
   <template>
     <style>
       :host {
-        --nebula-toast-background-color: dimgrey;
-        --nebula-toast-color: white;
-        --nebula-toast-transition-duration: 0.4s;
-        --nebula-toast-z-index: 9999;
         position: fixed;
         left: 0;
         right: 0;
@@ -75,19 +70,17 @@ The following styles can also be set as attributes on the element:
         margin: 16px auto;
         padding: 16px;
         border: 0;
-        font-family: sans-serif;
-        font-size: 1rem;
-        border-radius: 2px;
+        border-radius: var(--nebula-ui-border-radius, 2px);
         overflow: hidden;
         cursor: pointer;
         user-select: none;
-        background-color: var(--nebula-toast-background-color);
-        color: var(--nebula-toast-color);
-        z-index: var(--nebula-toast-z-index);
+        background-color: var(--nebula-toast-background-color, var(--nebula-ui-primary-color, teal));
+        color: var(--nebula-toast-color, var(--nebula-ui-primary-text-color,white));
+        z-index: 9999;
         visibility: hidden;
         opacity: 0;
-        transition: transform var(--nebula-toast-transition-duration) ease, opacity var(--nebula-toast-transition-duration) linear, visibility 0s linear var(--nebula-toast-transition-duration);
-        @apply(--nebula-toast);
+        transition: transform 0.4s ease, opacity 0.4s linear, visibility 0s linear 0.4s;
+        @apply --nebula-toast;
       }
       :host([position=top]) {
         top: 0;
@@ -101,16 +94,14 @@ The following styles can also be set as attributes on the element:
         transform: translateY(0%);
         opacity: 1;
         visibility: visible;
-        transition: transform var(--nebula-toast-transition-duration) ease, opacity var(--nebula-toast-transition-duration) linear;
+        transition: transform 0.4s ease, opacity 0.4s linear;
+        @apply --nebula-toast-opened;
       }
     </style>
     [[text]]
   </template>
   <script>
     Polymer({
-      /**
-       * Event handler triggered when opening and closing animation is complete.
-       */
       /**
        * Event triggered when element opening animation is complete.
        * @event opened
@@ -120,12 +111,8 @@ The following styles can also be set as attributes on the element:
        * @event closed
        */      
       is: 'nebula-toast',
-      behaviors: [
-        Nebula.StyleAttributesBehavior
-      ],
-      styleAttributes: {
-        'color': '--nebula-toast-color',
-        'background-color': '--nebula-toast-background-color'
+      hostAttributes: {
+        'role': 'alert1'
       },
       properties: {
         /**
@@ -170,20 +157,14 @@ The following styles can also be set as attributes on the element:
         'transitionend': '_onTransitionEnd'
       },
       /**
-      * Lifecycle handler when element is ready.
-      */
-      ready: function() {
-        Polymer.IronA11yAnnouncer.requestAvailability();
-      },
-      /**
       * Lifecycle handler triggered when a key is pressed down.
       * The handler is added and removed automatically when a toast is opened and closed.
       */ 
       _onKey: function(e) {
         var key = e.keyCode || e.which
         if (key === 27) {
+          e.preventDefault()
           this.set('opened', false)
-          return false
         }
       },
       /**
@@ -191,8 +172,8 @@ The following styles can also be set as attributes on the element:
        * The element is automatically closed.
        */
       _onTap: function(e) {
+        e.preventDefault()
         this.set('opened', false)
-        return false
       },
       /**
        * Property observer triggered when the value of `opened` is changed.
@@ -208,9 +189,9 @@ The following styles can also be set as attributes on the element:
           }.bind(this), duration)
         }
         if (opened) {
-          document.addEventListener('keydown', this._onKey.bind(this))
+          this.listen(document.body, 'keydown', '_onKeyDown')
         } else {
-          document.removeEventListener('keydown', this._onKey)
+          this.unlisten(document.body, 'keydown', '_onKeyDown')
         }
       },
       /**
@@ -220,7 +201,6 @@ The following styles can also be set as attributes on the element:
         if (e.propertyName === 'opacity') {
           if (this.opened) {
             this.fire('opened', null, {bubbles: false})
-            this.fire('iron-announce', {text: this.text}, { bubbles: true });
           }
           else {
             this.fire('closed', null, {bubbles: false})
@@ -243,15 +223,13 @@ The following styles can also be set as attributes on the element:
           // listen for our own closed event and resolve promise
           var handler = function() {
             this.removeEventListener('closed', handler)
-
             if (this._appended) {
               this._appended = false
               document.body.removeChild(this)
             }
-
             resolve() 
-          }
-          this.addEventListener('closed', handler.bind(this))
+          }.bind(this)
+          this.addEventListener('closed', handler)
 
           // open the toast in timeout closure to accomodate for animation
           // when appending new element

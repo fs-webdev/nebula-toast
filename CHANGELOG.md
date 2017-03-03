@@ -1,5 +1,13 @@
 # Change Log
 
+## [v1.1.0](https://github.com/arsnebula/nebula-toast/releases/tag/v1.1.0) (2017-03-02)
+
+- Removed style attributes behavior. **BREAKING**
+- Added support for global style attributes.
+- Removed dependency on iron-a11y-announcer.
+- Added promise-polyfill to demo and test pages (remove core.js).
+- Updated test configuration for parameter-driven testing.
+
 ## [v1.0.4](https://github.com/arsnebula/nebula-toast/releases/tag/v1.0.4) (2017-01-31)
 
 - Removed dependency on iron-a11y-keys-behavior.

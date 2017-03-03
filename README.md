@@ -1,6 +1,7 @@
-[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://beta.webcomponents.org/element/arsnebula/nebula-toast) [![Build Status](https://saucelabs.com/buildstatus/arsnebula)](https://saucelabs.com/beta/builds/648ca7208783438ba50f6278d740fbdf)
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/arsnebula/nebula-toast)
+[![Gitter chat](https://badges.gitter.im/org.png)](https://gitter.im/arsnebula/webcomponents)
 
-[![Build Status](https://saucelabs.com/browser-matrix/arsnebula.svg)](https://saucelabs.com/beta/builds/648ca7208783438ba50f6278d740fbdf)
+[![Build Status](https://saucelabs.com/browser-matrix/arsnebula.svg)](https://saucelabs.com/beta/builds/8f240d4afce84147a986aa66958df716)
 
 # \<nebula-toast\>
 
@@ -16,7 +17,7 @@ A web component to display a toast notification.
 
 ## Installation
 
-```
+```sh
 $ bower install arsnebula/nebula-toast
 ```
 
@@ -24,11 +25,11 @@ $ bower install arsnebula/nebula-toast
 
 Import the package elements:
 
-```
-<link rel="import" href="bower_components/nebula-toast/nebula-toast.html"> 
+```html
+<link rel="import" href="/bower_components/nebula-toast/nebula-toast.html"> 
 ```
 
-Add and configure the element declaratively.
+Add the element.
 
 ```html
 <nebula-toast
@@ -53,6 +54,15 @@ var toast = Polymer.Base.create('nebula-toast', {
 toast.show().then(function() {
   console.log('The toast has closed')
 })
+```
+
+Style the element.
+
+```css
+:host {
+  --nebula-toast-color: white;
+  --nebula-toast-background-color: darkred;
+}
 ```
 
 *For more information on element properties and methods see the element API documentation.*
