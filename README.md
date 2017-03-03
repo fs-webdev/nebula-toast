@@ -1,7 +1,7 @@
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/arsnebula/nebula-toast)
 [![Gitter chat](https://badges.gitter.im/org.png)](https://gitter.im/arsnebula/webcomponents)
 
-[![Build Status](https://saucelabs.com/browser-matrix/arsnebula.svg)](https://saucelabs.com/beta/builds/8f240d4afce84147a986aa66958df716)
+[![Build Status](https://saucelabs.com/browser-matrix/arsnebula.svg)](https://saucelabs.com/beta/builds/b44e72b8a48c4042b22fc371e9c52d85)
 
 # \<nebula-toast\>
 

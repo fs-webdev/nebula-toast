@@ -1,5 +1,10 @@
 # Change Log
 
+## [v1.1.1](https://github.com/arsnebula/nebula-toast/releases/tag/v1.1.1) (2017-03-02)
+
+- Minor fixes and tweaks to demo.
+- Fixed bug with keydown event handler naming.
+
 ## [v1.1.0](https://github.com/arsnebula/nebula-toast/releases/tag/v1.1.0) (2017-03-02)
 
 - Removed style attributes behavior. **BREAKING**

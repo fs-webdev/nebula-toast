@@ -6,64 +6,57 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../core.js/client/shim.js"></script>
     <link rel="import" href="../../promise-polyfill/promise-polyfill-lite.html">
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
     <link rel="import" href="../nebula-toast.html">
     <custom-style>
       <style is="custom-style" include="demo-pages-shared-styles">
-        html {
-          --nebula-ui-primary-color: darkred;
-          --nebula-ui-border-radius: 8px;
-        }        
+        .black-theme {
+          --nebula-toast-background-color: black;
+          --nebula-toast-color: yellow;
+        }
       </style>
     </custom-style>
   </head>
   <body>
 
     <div class="vertical-section-container">
-      <h3>Toast</h3>
+      <h3>Standard Toast</h3>
       <demo-snippet>
         <template is="dom-bind" id="demo">
           <nebula-toast
-            id="toast"
-            background-color="darkred"
-            color="white"
-            duration=5000
-            text="{{message}}">
+            id="toast1"
+            text="[[message]]">
           </nebula-toast>
-          <input type="text" value="{{message::input}}"/>
-          <button onclick="toast.show()">Open Toast</button>
+          <nebula-toast
+            id="toast2"
+            class="black-theme"
+            position="top"
+            text="[[message]]">
+          </nebula-toast>
+          <button onclick="toast1.show()">Default Toast</button>
+          <button onclick="toast2.show()">Black/Top Toast</button>
+          <button onclick="demo.show()">Programmatic Toast</button>
         </template>
-        <script>
-          demo.message = "Would you like toast?"
-        </script>
       </demo-snippet>
     </div>
 
-    <div class="vertical-section-container">
-      <h3>Dynamic Toast</h3>
-      <demo-snippet>
-        <template is="dom-bind" id="demo2">
-          <input type="text" value="{{message::input}}"/>
-          <button onclick="demo2.show()">Open Toast</button>
-        </template>
-        <script>
-          demo2.message = "Would you like toast?"
-          demo2.show = function() {
-            var toast = Polymer.Base.create('nebula-toast', {
-              text: demo2.message
-            })
-            toast.setAttribute('color', 'yellow')
-            toast.setAttribute('background-color', 'black')
-            toast.show().then(function() {
-              console.log('Toast is closed')
-            })
-          }
-        </script>
-      </demo-snippet>
-    </div>
+    <script>
+      demo.message = "Would you like toast?"
+      demo.show = function() {
+        var toast = Polymer.Base.create('nebula-toast', {
+          text: demo.message
+        })
+        toast.updateStyles({
+          '--nebula-toast-color': 'white',
+          '--nebula-toast-background-color': 'darkred'
+        })
+        toast.show().then(function() {
+          console.log('Toast is closed')
+        })
+      }
+    </script>
 
   </body>
 </html>
