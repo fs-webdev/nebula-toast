@@ -1,5 +1,9 @@
 # Change Log
 
+## [v2.0.0](https://github.com/arsnebula/nebula-toast/releases/tag/v2.0.0) (2017-04-21)
+
+- Upgraded to Polymer v2 ES2015 class-style element.
+
 ## [v1.1.1](https://github.com/arsnebula/nebula-toast/releases/tag/v1.1.1) (2017-03-02)
 
 - Minor fixes and tweaks to demo.

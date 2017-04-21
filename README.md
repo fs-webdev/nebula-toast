@@ -1,7 +1,8 @@
-[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/arsnebula/nebula-toast)
-[![Gitter chat](https://badges.gitter.im/org.png)](https://gitter.im/arsnebula/webcomponents)
-
-[![Build Status](https://saucelabs.com/browser-matrix/arsnebula.svg)](https://saucelabs.com/beta/builds/b44e72b8a48c4042b22fc371e9c52d85)
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-green.svg)](https://www.webcomponents.org/element/arsnebula/nebula-sidebar-layout)
+[![Polymer Version](https://img.shields.io/badge/polymer-v2-blue.svg)](https://www.polymer-project.org)
+[![Sauce Labs Build Status](https://img.shields.io/badge/saucelabs-passing-red.svg)](https://saucelabs.com/beta/builds/127a898cf5c24bef91aba79c41e74763)
+[![Gitter Chat](https://badges.gitter.im/org.png)](https://gitter.im/arsnebula/webcomponents)
+[![Become a Patreon](https://img.shields.io/badge/patreon-support_us-orange.svg)](https://www.patreon.com/arsnebula)
 
 # \<nebula-toast\>
 
@@ -21,9 +22,9 @@ A web component to display a toast notification.
 $ bower install arsnebula/nebula-toast
 ```
 
-## Usage
+## Getting Started
 
-Import the package elements:
+Import the package.
 
 ```html
 <link rel="import" href="/bower_components/nebula-toast/nebula-toast.html"> 
@@ -59,15 +60,25 @@ toast.show().then(function() {
 Style the element.
 
 ```css
-:host {
-  --nebula-toast-color: white;
-  --nebula-toast-background-color: darkred;
+nebula-toast {
+  color: white;
+  background-color: darkred;
 }
 ```
 
-*For more information on element properties and methods see the element API documentation.*
+*For more information, see the API documentation.*
 
 ## Contributing
+
+We welcome and appreciate feedback from the community. Here are a few ways that you can show your appreciation for this package:
+
+* Give us a **Star on GitHub** from either [webcomponents.org](https://www.webcomponents.org/element/arsnebula/nebula-element-mixin) or directly on [GitHub](https://github.com/arsnebula/nebula-element-mixin).
+
+* Submit a feature request, or a defect report on the [Issues List](https://www.webcomponents.org/element/arsnebula/nebula-element-mixin/issues).
+
+* Become a [Patreon](https://www.patreon.com/arsnebula). It takes a lot of time and effort to develop, document, test and support the elements in our [Nebula Essentials](https://www.webcomponents.org/collection/arsnebula/nebula-essentials) collection. Your financial contribution will help ensure that our entire collection continues to grow and improve.
+
+If you are a developer, and are interested in making a code contribution, consider opening an issue first to describe the change, and discuss with the core repository maintainers. Once you are ready, prepare a pull request:
 
 1. Fork it!
 2. Create your feature branch: `git checkout -b my-new-feature`

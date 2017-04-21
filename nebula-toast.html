@@ -1,62 +1,5 @@
-<!--
-@license
-Copyright (c) 2017 Ars Nebula LLC.
-This code may be used under the terms found in LICENSE.md of this repository.
--->
-
-<link rel="import" href="../polymer/polymer.html">
-
-<!--
-`<nebula-toast>` is a custom element to display a toast notification. The notification can be auto-closed after a specified `duration`, or when the user taps or clicks the notification area. The notification can be displayed at the top or the bottom of the screen area.
-
-## Usage
-
-```html
-<nebula-toast
-  id="toast"
-  position='top'
-  duration=5000>
-</nebula-toast>
-```
-
-Add and configure the element programatically using the `show` method. The element is appended and removed from the `document.body` automatically. The method returns a promise that is resolved once the element closing animation is complete.
-
-```js
-var toast = Polymer.Base.create('nebula-toast', {
-  text: 'Hello world',
-  duration: 5000
-})
-
-toast.show().then(function() {
-  console.log('The toast has closed')
-})
-```
-
-## Style
-
-Theme variables are the easiest way to style the element. Theme variables may affect multiple styles and element states.
-
-Custom property | Description
-:--- | :---
-`--nebula-toast-color` | The theme color of the element.
-`--nebula-toast-background-color` | The theme background color of the element.
-
-For more granular control, the following mixins can be used to customize the element further.
-
-Custom property | Description
-:--- | :---
-`--nebula-toast` | Mixin applied to base element.
-`--nebula-toast-opened` | Mixin applied to element when opened.
-
-The element also inherits default values from the following global theme styles. If a global theme variable has not been set, it will use the local default.
-
-Custom property | Description | Default
-:--- | :--- | :---
-`--nebula-ui-primary-color | The theme color of the element. | teal
-`--nebula-ui-border-radius` | The border-radius of the element. | 2px
-
-@demo demo/index.html
--->
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../nebula-element-mixin/nebula-element-mixin.html">
 
 <dom-module id="nebula-toast">
   <template>
@@ -74,13 +17,12 @@ Custom property | Description | Default
         overflow: hidden;
         cursor: pointer;
         user-select: none;
-        background-color: var(--nebula-toast-background-color, var(--nebula-ui-primary-color, teal));
-        color: var(--nebula-toast-color, var(--nebula-ui-primary-text-color,white));
+        background-color: dimgrey;
+        color: white;
         z-index: 9999;
         visibility: hidden;
         opacity: 0;
         transition: transform 0.4s ease, opacity 0.4s linear, visibility 0s linear 0.4s;
-        @apply --nebula-toast;
       }
       :host([position=top]) {
         top: 0;
@@ -95,149 +37,175 @@ Custom property | Description | Default
         opacity: 1;
         visibility: visible;
         transition: transform 0.4s ease, opacity 0.4s linear;
-        @apply --nebula-toast-opened;
       }
     </style>
     [[text]]
   </template>
   <script>
-    Polymer({
+  (function() {
+    'use strict'
+
+    // symbols for private members
+    const onTransitionEnd = Symbol()
+    const onClick = Symbol()
+    const onKeyDown = Symbol()
+    const onOpenedChanged = Symbol()
+    const opened = Symbol()
+    const isAppended = Symbol()
+    const timer = Symbol()
+
+    // symbols for protected members
+    const listen = Symbol.for('Nebula.ElementMixin.listen')
+    const unlisten = Symbol.for('Nebula.ElementMixin.unlisten')
+    const observe = Symbol.for('Nebula.ElementMixin.observe')
+    const fire = Symbol.for('Nebula.ElementMixin.fire')
+
+    /**
+     * An animated toast notification.
+    */
+    class NebulaToast extends Nebula.ElementMixin(Polymer.Element) {
+
       /**
-       * Event triggered when element opening animation is complete.
-       * @event opened
+       * Gets the custom element name.
+       * @type {string}
        */
+      static get is() { return 'nebula-toast' }
+
       /**
-       * Event triggered when element closing animation is complete.
-       * @event closed
-       */      
-      is: 'nebula-toast',
-      hostAttributes: {
-        'role': 'alert1'
-      },
-      properties: {
-        /**
-        * True if the toast is open, otherwise false.
-        */
-        opened: {
-          type: Boolean,
-          reflectToAttribute: true,
-          notify: true,
-          value: false
-        },
-        /**
-        * Position of the toast.
-        * Supported values are <b>top</b> or <b>bottom</b>.
-        */
-        position: {
-          type: String,
-          reflectToAttribute: true,
-          value: 'bottom'
-        },
-        /**
-        * The text that is displayed.
-        * The element will resize to fit the content automatically.
-        */
-        text: {
-          type: String
-        },
-        /**
-        * The duration (ms) before the element is automatically closed.
-        * Set the duration to zero to close the toast manually.
-        */
-        duration: {
-          type: Number,
-          value: 5000
+       * Gets the property definitions for data binding.
+       * @type {Object}
+       * @property {boolean} opened - Indicates if the element is opened.
+       * @property {string} position - Position of the toast (top or bottom).
+       * @property {string} text - The text to display.
+       * @property {string} duration - The duration (ms) before the element is automatically closed.
+       */
+      static get properties() {
+        return {
+          opened: {
+            type: Boolean,
+            reflectToAttribute: true,
+            notify: true,
+            value: false
+          },
+          position: {
+            type: String,
+            reflectToAttribute: true,
+            value: 'bottom'
+          },
+          text: {
+            type: String
+          },
+          duration: {
+            type: Number,
+            value: 5000
+          }        
         }
-      },
-      observers: [
-        '_onOpenedChanged(opened, duration)'
-      ],
-      listeners: {
-        'tap': '_onTap',
-        'transitionend': '_onTransitionEnd'
-      },
+      }
+
       /**
-      * Lifecycle handler triggered when a key is pressed down.
-      * The handler is added and removed automatically when a toast is opened and closed.
+       * Lifecycle callback invoked when element has been initialized.
+       */
+      ready() {
+        super.ready()
+        this.setAttribute('role', 'alert')
+        this[observe]('opened', this[onOpenedChanged])
+        this[listen](this, 'click', this[onClick])
+        this[listen](this, 'transitionend', this[onTransitionEnd])
+      }
+
+      /**
+      * Event handler triggered when a key is pressed down.
+      * @private
       */ 
-      _onKeyDown: function(e) {
-        var key = e.keyCode || e.which
-        if (key === 27) {
+      [onKeyDown](e) {
+        if (e.key === 'Escape') {
           e.preventDefault()
           this.set('opened', false)
         }
-      },
+      }
+
       /**
-       * Event handler triggered when the user taps the element.
-       * The element is automatically closed.
-       */
-      _onTap: function(e) {
-        e.preventDefault()
-        this.set('opened', false)
-      },
-      /**
-       * Property observer triggered when the value of `opened` is changed.
-       */
-      _onOpenedChanged: function(opened, duration) {
-        if (this.timeout) {
-          clearTimeout(this.timeout)
-          this.timeout = null
-        }
-        if (opened && duration > 0) {
-          this.timeout = setTimeout(function() {
-            this.set('opened', false)
-          }.bind(this), duration)
-        }
-        if (opened) {
-          this.listen(document.body, 'keydown', '_onKeyDown')
-        } else {
-          this.unlisten(document.body, 'keydown', '_onKeyDown')
-        }
-      },
-      /**
-       * Event handler triggered when the element opening or closing animation is complete.
-       */
-      _onTransitionEnd: function(e) {
+      * Event handler triggered when the element opening or closing animation is complete.
+      * @private
+      */
+      [onTransitionEnd](e) {
         if (e.propertyName === 'opacity') {
           if (this.opened) {
-            this.fire('opened', null, {bubbles: false})
-          }
-          else {
-            this.fire('closed', null, {bubbles: false})
+            this[fire]('opened')
+          } else {
+            this[fire]('closed')
           }
         }
-      },
-      /**
-       * Displays the element.
-       * Any provided options will be merged into the element properties.
-       * A promise is returned that will resolve when the element has been closed.
-       */
-      show: function(options) {
-        return new Promise(function(resolve) {
-          // add element to document body if not parent
-          if (!this.parentNode) {
-            this._appended = true
-            document.body.appendChild(this)
-          }
-          
-          // listen for our own closed event and resolve promise
-          var handler = function() {
-            this.removeEventListener('closed', handler)
-            if (this._appended) {
-              this._appended = false
-              document.body.removeChild(this)
-            }
-            resolve() 
-          }.bind(this)
-          this.addEventListener('closed', handler)
-
-          // open the toast in timeout closure to accomodate for animation
-          // when appending new element
-          setTimeout(function() {
-            this.set('opened', true)
-          }.bind(this))
-        }.bind(this))
       }
-    })
+
+      /**
+       * Event handler triggered when the user taps the element.
+       * @private
+       */
+      [onClick](e) {
+        e.preventDefault()
+        this.set('opened', false)
+      }
+
+      /**
+       * Property observer triggered when the value of `opened` is changed.
+       * @private
+       */
+      [onOpenedChanged](opened) {
+        if (opened) {
+          if (typeof this.duration === 'number' && this.duration > 0) {
+            this[timer] = setTimeout(() => {
+              this.set('opened', false)
+            }, this.duration)
+          }
+          this[listen](document.body, 'keydown', this[onKeyDown])
+        } else {
+          clearTimeout(this[timer])
+          this[unlisten](document.body, 'keydown')
+        }
+      }
+
+      /**
+      * Displays the element.
+      * If the element does not have a parent, it will be auto appended to `document.body`.
+      * A promise is returned that will resolve when the element has been closed.
+      */
+      show(props) {
+        return new Promise((resolve, reject) => {
+          try {
+            // set properties if provided
+            if (props) this.setProperties(props)
+
+            // add element to document body if not parent
+            if (!this.parentNode) {
+              this[isAppended] = true
+              document.body.appendChild(this)
+            }
+            
+            // listen for our own closed event and resolve promise
+            const handler = () => {
+              this[unlisten](this, 'closed')
+              if (this[isAppended]) {
+                this[isAppended] = false
+                document.body.removeChild(this)
+              }
+              resolve() 
+            }
+            this[listen](this, 'closed', handler)
+
+            // open the toast in timeout closure to accomodate for animation
+            // when appending new element
+            setTimeout(() => {
+              this.set('opened', true)
+            })
+          } catch(error) {
+            reject(error)
+          }
+        })
+      }
+    }
+
+    customElements.define(NebulaToast.is, NebulaToast)
+  }())
   </script>
 </dom-module>

@@ -1,17 +1,27 @@
 <!doctype html>
-
 <html>
   <head>
     <title>nebula-toast</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <link rel="import" href="../../promise-polyfill/promise-polyfill-lite.html">
-    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
+    <link rel="import" href="../../polymer/lib/elements/dom-bind.html">
     <link rel="import" href="../nebula-toast.html">
     <custom-style>
-      <style is="custom-style" include="demo-pages-shared-styles">
+      <style>
+        body {
+          font-family: sans-serif;
+          font-size: 14px;
+          margin: 0;
+          padding: 16px;
+          background-color:white;          
+        }
+        demo-snippet {
+          display: block;
+          box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+          padding: 8px 16px;
+          margin-bottom: 40px;
+        }
         .black-theme {
           --nebula-toast-background-color: black;
           --nebula-toast-color: yellow;
@@ -21,13 +31,15 @@
   </head>
   <body>
 
-    <div class="vertical-section-container">
-      <h3>Standard Toast</h3>
-      <demo-snippet>
-        <template is="dom-bind" id="demo">
+    <h3>Standard Toast</h3>
+    <demo-snippet>
+      <dom-bind id="demo">
+        <template>
           <nebula-toast
             id="toast1"
-            text="[[message]]">
+            text="[[message]]"
+            on-opened="logEvent"
+            on-closed="logEvent">
           </nebula-toast>
           <nebula-toast
             id="toast2"
@@ -39,20 +51,23 @@
           <button onclick="toast2.show()">Black/Top Toast</button>
           <button onclick="demo.show()">Programmatic Toast</button>
         </template>
-      </demo-snippet>
-    </div>
+      </dom-bind>
+    </demo-snippet>
 
     <script>
       demo.message = "Would you like toast?"
+      demo.logEvent = function(e) {
+        console.log(e)
+      }
       demo.show = function() {
-        var toast = Polymer.Base.create('nebula-toast', {
-          text: demo.message
-        })
+        const toast = document.createElement('nebula-toast')
         toast.updateStyles({
           '--nebula-toast-color': 'white',
           '--nebula-toast-background-color': 'darkred'
         })
-        toast.show().then(function() {
+        toast.show({
+          text: demo.message
+        }).then(function() {
           console.log('Toast is closed')
         })
       }
