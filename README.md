@@ -1,6 +1,6 @@
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-green.svg)](https://www.webcomponents.org/element/arsnebula/nebula-sidebar-layout)
 [![Polymer Version](https://img.shields.io/badge/polymer-v2-blue.svg)](https://www.polymer-project.org)
-[![Sauce Labs Build Status](https://img.shields.io/badge/saucelabs-passing-red.svg)](https://saucelabs.com/beta/builds/127a898cf5c24bef91aba79c41e74763)
+[![Sauce Labs Build Status](https://img.shields.io/badge/saucelabs-passing-red.svg)](https://saucelabs.com/beta/builds/8319602f93ce486cb9f4617e2fda80c5)
 [![Gitter Chat](https://badges.gitter.im/org.png)](https://gitter.im/arsnebula/webcomponents)
 [![Become a Patreon](https://img.shields.io/badge/patreon-support_us-orange.svg)](https://www.patreon.com/arsnebula)
 
@@ -11,15 +11,12 @@ A web component to display a toast notification.
 * Responsive design adapts to screen size
 * Can be positioned at the top or the bottom of the screen
 * Supports `a11y` for accessability
-* Easily styled declaratively or with CSS custom properties
-* Can auto-close after a specified duration
-
-> Warning: This element utilizes features of [ECMAScript 2015](http://www.ecma-international.org/ecma-262/6.0/) which may not be supported by all browsers. To ensure support by all browsers, consider using the [Core-js Polyfill](https://github.com/zloirock/core-js).
+* Customizable duration
 
 ## Installation
 
 ```sh
-$ bower install arsnebula/nebula-toast
+$ bower install -S arsnebula/nebula-toast
 ```
 
 ## Getting Started
@@ -35,24 +32,21 @@ Add the element.
 ```html
 <nebula-toast
   id="toast"
-  position='top'
-  background-color="darkred"
-  color="white"
-  transition-duration="0.5s"
-  duration=5000>
+  text="Hello World"
+  position="top"
+  duration=5000
+  opened="{{opened}}">
 </nebula-toast>
 ```
 
 Add and configure the element programatically using the `show` method. The element is appended and removed from the `document.body` automatically.
 
 ```js
-var toast = Polymer.Base.create('nebula-toast', {
+let toast = document.createElement('nebula-toast')
+toast.show({
   text: 'Hello world',
-  transition-duration: '0.5s',
   duration: 5000
-})
-
-toast.show().then(function() {
+}).then(function() {
   console.log('The toast has closed')
 })
 ```

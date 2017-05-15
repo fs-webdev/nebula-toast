@@ -4,39 +4,59 @@
 <dom-module id="nebula-toast">
   <template>
     <style>
+      @keyframes bottomEnter {
+        from { opacity: 0; transform: translateY(+100%); }
+        to { opacity: 1; transform: translateY(0%); }
+      }
+      @keyframes bottomExit {
+        from { opacity: 1; transform: translateY(0%); }
+        to { opacity: 0; transform: translateY(+100%); }
+      }
+      @keyframes topEnter {
+        from { opacity: 0; transform: translateY(-100%); }
+        to { opacity: 1; transform: translateY(0%); }
+      }
+      @keyframes topExit {
+        from { opacity: 1; transform: translateY(0%); }
+        to { opacity: 0; transform: translateY(-100%); }
+      }
       :host {
         position: fixed;
-        left: 0;
-        right: 0;
-        width: 85%;
+        display: none;
+        left: 16px;
+        right: 16px;
         max-width: 600px;
-        margin: 16px auto;
+        margin: auto;
         padding: 16px;
         border: 0;
         border-radius: var(--nebula-ui-border-radius, 2px);
         overflow: hidden;
         cursor: pointer;
         user-select: none;
-        background-color: dimgrey;
-        color: white;
+        background-color: var(--nebula-toast-background-color, dimgrey);
+        color: var(--nebula-toast-color, white);
         z-index: 9999;
-        visibility: hidden;
-        opacity: 0;
-        transition: transform 0.4s ease, opacity 0.4s linear, visibility 0s linear 0.4s;
-      }
-      :host([position=top]) {
-        top: 0;
-        transform: translateY(-100%); 
       }
       :host([position=bottom]) {
-        bottom: 0;
-        transform: translateY(+100%);
+        bottom: 16px;
       }
-      :host([opened]) {
-        transform: translateY(0%);
-        opacity: 1;
-        visibility: visible;
-        transition: transform 0.4s ease, opacity 0.4s linear;
+      :host([position=top]) {
+        top: 16px;
+      }
+      :host([animate]) {
+        display: block;
+      }
+      :host([position=bottom][animate=enter]) {
+        animation: bottomEnter 250ms;
+      }
+      :host([position=bottom][animate=exit]) {
+        animation: bottomExit 250ms;
+      }
+      :host([position=top][animate=enter]) {
+        animation: topEnter 250ms;
+      }
+      :host([position=top][animate=exit]) {
+        animation: topExit 250ms;
       }
     </style>
     [[text]]
@@ -46,7 +66,7 @@
     'use strict'
 
     // symbols for private members
-    const onTransitionEnd = Symbol()
+    const onAnimationEnd = Symbol()
     const onClick = Symbol()
     const onKeyDown = Symbol()
     const onOpenedChanged = Symbol()
@@ -110,7 +130,7 @@
         this.setAttribute('role', 'alert')
         this[observe]('opened', this[onOpenedChanged])
         this[listen](this, 'click', this[onClick])
-        this[listen](this, 'transitionend', this[onTransitionEnd])
+        this[listen](this, 'animationend', this[onAnimationEnd])
       }
 
       /**
@@ -128,13 +148,12 @@
       * Event handler triggered when the element opening or closing animation is complete.
       * @private
       */
-      [onTransitionEnd](e) {
-        if (e.propertyName === 'opacity') {
-          if (this.opened) {
-            this[fire]('opened')
-          } else {
-            this[fire]('closed')
-          }
+      [onAnimationEnd](e) {
+        if (this.opened) {
+          this[fire]('opened')
+        } else {
+          this.removeAttribute('animate')
+          this[fire]('closed')
         }
       }
 
@@ -159,7 +178,9 @@
             }, this.duration)
           }
           this[listen](document.body, 'keydown', this[onKeyDown])
+          this.setAttribute('animate', 'enter')
         } else {
+          this.setAttribute('animate', 'exit')
           clearTimeout(this[timer])
           this[unlisten](document.body, 'keydown')
         }
@@ -191,13 +212,11 @@
               }
               resolve() 
             }
-            this[listen](this, 'closed', handler)
 
-            // open the toast in timeout closure to accomodate for animation
-            // when appending new element
-            setTimeout(() => {
-              this.set('opened', true)
-            })
+            this[listen](this, 'closed', handler)
+            
+            // open the element
+            this.set('opened', true)
           } catch(error) {
             reject(error)
           }

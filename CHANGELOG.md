@@ -1,5 +1,11 @@
 # Change Log
 
+## [v2.0.1](https://github.com/arsnebula/nebula-toast/releases/tag/v2.0.1) (2017-05-15)
+
+- Refactoring from transitions to animation to support 'display:none'.
+- Added animate attribute to allow styling animation easier.
+- Added CSS variables for color and background color.
+
 ## [v2.0.0](https://github.com/arsnebula/nebula-toast/releases/tag/v2.0.0) (2017-04-21)
 
 - Upgraded to Polymer v2 ES2015 class-style element.

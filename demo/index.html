@@ -26,6 +26,10 @@
           --nebula-toast-background-color: black;
           --nebula-toast-color: yellow;
         }
+        .red-theme {
+          background-color: darkred;
+          color: wheat;
+        }
       </style>
     </custom-style>
   </head>
@@ -61,10 +65,7 @@
       }
       demo.show = function() {
         const toast = document.createElement('nebula-toast')
-        toast.updateStyles({
-          '--nebula-toast-color': 'white',
-          '--nebula-toast-background-color': 'darkred'
-        })
+        toast.classList.add('red-theme')
         toast.show({
           text: demo.message
         }).then(function() {

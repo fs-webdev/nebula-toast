@@ -13,20 +13,22 @@
 ```html
 <nebula-toast
   id="toast"
-  position='top'
-  duration=5000>
+  text="Hello world!"
+  position="top"
+  duration=5000
+  opened="{{opened}}">
 </nebula-toast>
 ```
 
 Add and configure the element programatically using the `show` method. The element is appended and removed from the `document.body` automatically. The method returns a promise that is resolved once the element closing animation is complete.
 
 ```js
-const toast = Polymer.Base.create('nebula-toast', {
+let toast = document.createElement('nebula-toast')
+
+toast.show({
   text: 'Hello world',
   duration: 5000
-})
-
-toast.show().then(function() {
+}).then(function() {
   console.log('The toast has closed')
 })
 ```
