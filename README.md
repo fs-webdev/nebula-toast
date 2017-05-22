@@ -1,12 +1,12 @@
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-green.svg)](https://www.webcomponents.org/element/arsnebula/nebula-sidebar-layout)
 [![Polymer Version](https://img.shields.io/badge/polymer-v2-blue.svg)](https://www.polymer-project.org)
-[![Sauce Labs Build Status](https://img.shields.io/badge/saucelabs-passing-red.svg)](https://saucelabs.com/beta/builds/8319602f93ce486cb9f4617e2fda80c5)
+[![Sauce Labs Build Status](https://img.shields.io/badge/saucelabs-passing-red.svg)](https://saucelabs.com/beta/builds/55acadc8cae04ad2a3dad5c7d59f8e65)
 [![Gitter Chat](https://badges.gitter.im/org.png)](https://gitter.im/arsnebula/webcomponents)
 [![Become a Patreon](https://img.shields.io/badge/patreon-support_us-orange.svg)](https://www.patreon.com/arsnebula)
 
 # \<nebula-toast\>
 
-A web component to display a toast notification.
+Display an animated toast notification.
 
 * Responsive design adapts to screen size
 * Can be positioned at the top or the bottom of the screen

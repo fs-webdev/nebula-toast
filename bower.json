@@ -24,17 +24,14 @@
     "notification"
   ],
   "main": "nebula-toast.html",
-  "pages": {
-    "<nebula-toast>": "docs/nebula-toast.md"
-  },
   "demos": {
     "Demo": "demo/index.html"
   },
   "dependencies": {
-    "polymer": "Polymer/polymer#>=2.0.0-rc.1 <3.0",
+    "polymer": "Polymer/polymer#^2.0.0",
     "nebula-element-mixin": "arsnebula/nebula-element-mixin#^2.0.0"
   },
   "devDependencies": {
-    "web-component-tester": "polymer/web-component-tester#>=6.0.0 || 6.0.0-prerelease.5"
+    "web-component-tester": "polymer/web-component-tester#^6.0.0"
   }
 }

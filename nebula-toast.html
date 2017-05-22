@@ -1,6 +1,63 @@
 <link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../nebula-element-mixin/nebula-element-mixin.html">
 
+<!--
+`<nebula-toast>` is a custom element to display a toast notification. The notification can be auto-closed after a specified duration, or when the user taps or clicks the notification area. The notification can be displayed at the top or the bottom of the screen area.
+
+## Import
+
+```html
+<link rel="import" href="/bower_components/nebula-toast/nebula-toast.html"> 
+```
+
+## Usage
+
+```html
+<nebula-toast
+  id="toast"
+  text="Hello world!"
+  position="top"
+  duration=5000
+  opened="{{opened}}">
+</nebula-toast>
+```
+
+Add and configure the element programatically using the `show` method. The element is appended and removed from the `document.body` automatically. The method returns a promise that is resolved once the element closing animation is complete.
+
+```js
+let toast = document.createElement('nebula-toast')
+
+toast.show({
+  text: 'Hello world',
+  duration: 5000
+}).then(function() {
+  console.log('The toast has closed')
+})
+```
+
+## Styling
+
+The element can be styled with stardard CSS properties and the following custom variables:
+
+Custom property | Description | Default
+:--- | :--- | :---
+`--nebula-toast-color` | The text color of the element. | white
+`--nebula-toast-background-color` | The background color of the element. | dimgrey
+
+```css
+nebula-toast {
+  color: white;
+  background-color: darkred;
+}
+```
+
+The element also inherits default values from the following global theme styles. If a global theme variable has not been set, it will use the local default.
+
+Custom property | Description | Default
+:--- | :--- | :---
+`--nebula-ui-border-radius` | The border-radius of the element. | 2px
+
+-->
 <dom-module id="nebula-toast">
   <template>
     <style>
@@ -65,7 +122,7 @@
   (function() {
     'use strict'
 
-    // symbols for private members
+    // symbols for private and protected members
     const onAnimationEnd = Symbol()
     const onClick = Symbol()
     const onKeyDown = Symbol()
@@ -74,47 +131,53 @@
     const isAppended = Symbol()
     const timer = Symbol()
 
-    // symbols for protected members
     const listen = Symbol.for('Nebula.ElementMixin.listen')
     const unlisten = Symbol.for('Nebula.ElementMixin.unlisten')
     const observe = Symbol.for('Nebula.ElementMixin.observe')
     const fire = Symbol.for('Nebula.ElementMixin.fire')
 
-    /**
-     * An animated toast notification.
-    */
     class NebulaToast extends Nebula.ElementMixin(Polymer.Element) {
 
       /**
-       * Gets the custom element name.
-       * @type {string}
+       * Gets the custom element tag name.
+       * @protected
+       * @ignore
        */
       static get is() { return 'nebula-toast' }
 
       /**
-       * Gets the property definitions for data binding.
-       * @type {Object}
-       * @property {boolean} opened - Indicates if the element is opened.
-       * @property {string} position - Position of the toast (top or bottom).
-       * @property {string} text - The text to display.
-       * @property {string} duration - The duration (ms) before the element is automatically closed.
+       * Gets the property definitions for Polymer data binding.
+       * @protected
+       * @ignore
        */
       static get properties() {
         return {
+          /**
+           * Indicates if the element is opened.
+           */
           opened: {
             type: Boolean,
             reflectToAttribute: true,
             notify: true,
             value: false
           },
+          /**
+           * Vertical position of the toast (top or bottom).
+           */
           position: {
             type: String,
             reflectToAttribute: true,
             value: 'bottom'
           },
+          /**
+           * The text message to display.
+           */          
           text: {
             type: String
           },
+          /**
+           * The duration (ms) before the element is automatically closed.
+           */
           duration: {
             type: Number,
             value: 5000
@@ -123,7 +186,8 @@
       }
 
       /**
-       * Lifecycle callback invoked when element has been initialized.
+       * The Polymer lifecycle callback invoked when element has been initialized.
+       * @protected
        */
       ready() {
         super.ready()
@@ -135,6 +199,7 @@
 
       /**
       * Event handler triggered when a key is pressed down.
+      * @param {KeyboardEvent} e - Information about the event.
       * @private
       */ 
       [onKeyDown](e) {
@@ -146,6 +211,7 @@
 
       /**
       * Event handler triggered when the element opening or closing animation is complete.
+      * @param {AnimationEvent} e - Information about the event.
       * @private
       */
       [onAnimationEnd](e) {
@@ -159,6 +225,7 @@
 
       /**
        * Event handler triggered when the user taps the element.
+       * @param {MouseEvent} e - Information about the event.
        * @private
        */
       [onClick](e) {
@@ -168,6 +235,7 @@
 
       /**
        * Property observer triggered when the value of `opened` is changed.
+       * @param {boolean} opened - The updated value of the `opened` property.
        * @private
        */
       [onOpenedChanged](opened) {
@@ -190,6 +258,8 @@
       * Displays the element.
       * If the element does not have a parent, it will be auto appended to `document.body`.
       * A promise is returned that will resolve when the element has been closed.
+      * @param {*} [props] - Property values to update.
+      * @public
       */
       show(props) {
         return new Promise((resolve, reject) => {

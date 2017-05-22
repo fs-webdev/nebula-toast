@@ -1,10 +1,11 @@
 # Change Log
 
-## [v2.0.1](https://github.com/arsnebula/nebula-toast/releases/tag/v2.0.1) (2017-05-15)
+## [v2.0.1](https://github.com/arsnebula/nebula-toast/releases/tag/v2.0.1) (2017-05-22)
 
-- Refactoring from transitions to animation to support 'display:none'.
+- Refactoring from transitions to animation to support 'display:none' when closed.
 - Added animate attribute to allow styling animation easier.
 - Added CSS variables for color and background color.
+- Remove manual documentation and updated inline comments for API documentation generation.
 
 ## [v2.0.0](https://github.com/arsnebula/nebula-toast/releases/tag/v2.0.0) (2017-04-21)
 
