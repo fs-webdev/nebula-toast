@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
-    "nebula-element-mixin": "arsnebula/nebula-element-mixin#^2.0.0"
+    "nebula-element-mixin": "fs-webdev/nebula-element-mixin#^2.0.0"
   },
   "devDependencies": {
     "web-component-tester": "polymer/web-component-tester#^6.0.0"
