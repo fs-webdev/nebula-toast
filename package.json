@@ -1,6 +1,6 @@
 {
   "name": "nebula-toast",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "An animated toast notification.",
   "license": "ISC",
   "private": true,
